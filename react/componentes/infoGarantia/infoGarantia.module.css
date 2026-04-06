@@ -1,0 +1,144 @@
+.infoGarantia {
+  width: 100%;
+  padding: 16px 16px 40px;
+  box-sizing: border-box;
+}
+
+.container {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.title {
+  margin: 0 0 34px;
+  text-align: center;
+  font-size: 24px;
+  line-height: 1.15;
+  font-weight: 700;
+  color: #3f3f3f;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+  margin-bottom: 42px;
+}
+
+.card {
+  min-height: 220px;
+  border: 2px solid #7a7a7a;
+  border-radius: 24px;
+  background: transparent;
+  padding: 26px 24px;
+  box-sizing: border-box;
+}
+
+.list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.list li {
+  position: relative;
+  margin-bottom: 10px;
+  padding-left: 24px;
+  font-size: 22px;
+  line-height: 1.15;
+  color: #4b4b4b;
+}
+
+.list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #4b4b4b;
+}
+
+.important {
+  margin: 0 0 22px;
+  text-align: center;
+  font-size: 26px;
+  line-height: 1;
+  font-weight: 800;
+  color: #3f3f3f;
+}
+
+.text {
+  margin: 0;
+  text-align: center;
+  font-size: 22px;
+  line-height: 1.15;
+  color: #4b4b4b;
+}
+
+.button {
+  display: block;
+  width: fit-content;
+  min-width: 350px;
+  margin: 0 auto;
+  padding: 16px 28px;
+  border-radius: 999px;
+  background: #000;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  font-size: 17px;
+  line-height: 1;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .title {
+    font-size: 20px;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    min-height: auto;
+  }
+
+  .list li,
+  .text {
+    font-size: 18px;
+  }
+
+  .important {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 640px) {
+  .infoGarantia {
+    padding: 12px 12px 32px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .card {
+    padding: 20px 18px;
+    border-radius: 18px;
+  }
+
+  .list li,
+  .text {
+    font-size: 16px;
+  }
+
+  .button {
+    min-width: 100%;
+    font-size: 15px;
+    padding: 14px 20px;
+  }
+}

@@ -1,0 +1,155 @@
+import React, { useState } from 'react'
+import styles from './dadosCompra.module.css'
+import common from '../formCommon.module.css'
+
+interface DadosCompraProps {
+  isActive: boolean
+  onContinue?: (data: {
+    canal: string
+    outroCanal: string
+  }) => void
+}
+
+export default function DadosCompra({
+  isActive,
+  onContinue,
+}: DadosCompraProps) {
+  const [canal, setCanal] = useState('')
+  const [outroCanal, setOutroCanal] = useState('')
+
+  const isOutro = canal === 'outros'
+  const isValid = isOutro ? outroCanal.trim() : canal.trim()
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (!isValid) {
+      return
+    }
+
+    onContinue?.({
+      canal,
+      outroCanal,
+    })
+  }
+
+  if (!isActive) {
+    return (
+      <section className={common.formSection}>
+        <div className={common.formCardClosed}>
+          <div className={common.titleWrapper}>
+            <span className={common.step}>4</span>
+            <h2 className={common.title}>Canal de Compra</h2>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <form className={common.formSection} onSubmit={handleSubmit}>
+      <div className={common.formCard}>
+        <div className={common.titleWrapper}>
+          <span className={common.step}>4</span>
+          <h2 className={common.title}>Canal de Compra</h2>
+        </div>
+
+        <p className={styles.description}>
+          Informe o canal onde adquiriu nosso produto.
+        </p>
+
+        <div className={styles.grid}>
+          <label className={styles.optionCard}>
+            <input
+              type="radio"
+              name="canalCompra"
+              value="shopee"
+              checked={canal === 'shopee'}
+              onChange={(e) => setCanal(e.target.value)}
+            />
+            <span className={styles.optionLabel}>Shopee</span>
+            <span className={styles.optionBrand}>Shopee</span>
+          </label>
+
+          <label className={styles.optionCard}>
+            <input
+              type="radio"
+              name="canalCompra"
+              value="site-idealine"
+              checked={canal === 'site-idealine'}
+              onChange={(e) => setCanal(e.target.value)}
+            />
+            <span className={styles.optionLabel}>Site da Idealine</span>
+            <span className={styles.optionBrand}>♡</span>
+          </label>
+
+          <label className={styles.optionCard}>
+            <input
+              type="radio"
+              name="canalCompra"
+              value="mercado-livre"
+              checked={canal === 'mercado-livre'}
+              onChange={(e) => setCanal(e.target.value)}
+            />
+            <span className={styles.optionLabel}>Mercado Livre</span>
+            <span className={styles.optionBrand}>ML</span>
+          </label>
+
+          <label className={styles.optionCard}>
+            <input
+              type="radio"
+              name="canalCompra"
+              value="consultora"
+              checked={canal === 'consultora'}
+              onChange={(e) => setCanal(e.target.value)}
+            />
+            <span className={styles.optionLabel}>Consultora</span>
+            <span className={styles.optionBrand}>◔</span>
+          </label>
+
+          <label className={styles.optionCard}>
+            <input
+              type="radio"
+              name="canalCompra"
+              value="magalu"
+              checked={canal === 'magalu'}
+              onChange={(e) => setCanal(e.target.value)}
+            />
+            <span className={styles.optionLabel}>Magalu</span>
+            <span className={styles.optionBrand}>magalu</span>
+          </label>
+
+          <label className={styles.optionCardOther}>
+            <div className={styles.optionOtherLeft}>
+              <input
+                type="radio"
+                name="canalCompra"
+                value="outros"
+                checked={canal === 'outros'}
+                onChange={(e) => setCanal(e.target.value)}
+              />
+              <span className={styles.optionLabel}>Outros</span>
+            </div>
+
+            <input
+              type="text"
+              className={styles.otherInput}
+              placeholder="Ex.: Apto 12"
+              value={outroCanal}
+              onChange={(e) => setOutroCanal(e.target.value)}
+              disabled={!isOutro}
+            />
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          className={common.button}
+          disabled={!isValid}
+        >
+          Continuar
+        </button>
+      </div>
+    </form>
+  )
+}

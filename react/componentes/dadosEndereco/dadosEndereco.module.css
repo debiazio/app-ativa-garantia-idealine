@@ -1,0 +1,61 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.linkCep {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: -2px 0 10px 0;
+  text-align: left;
+  font-size: 14px;
+  color: #4f4f4f;
+  cursor: pointer;
+}
+
+.addressBox {
+  min-height: 44px;
+  border: 1px solid #bdbdbd;
+  border-radius: 6px;
+  background: #fff;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.addressLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.houseIcon {
+  font-size: 18px;
+  color: #b7b7b7;
+  line-height: 1;
+}
+
+.addressText {
+  font-size: 14px;
+  color: #4f4f4f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.changeButton {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  cursor: pointer;
+  flex-shrink: 0;
+}

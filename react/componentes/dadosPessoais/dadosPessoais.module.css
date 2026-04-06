@@ -1,0 +1,24 @@
+.row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.fieldHalf {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .row {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

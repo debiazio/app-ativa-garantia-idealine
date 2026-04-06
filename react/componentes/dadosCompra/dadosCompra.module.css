@@ -1,0 +1,103 @@
+.description {
+  margin: 22px 0 20px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #6d6d6d;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 20px;
+}
+
+.optionCard {
+  min-height: 40px;
+  border: 1px solid #bdbdbd;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.optionCard input[type='radio'] {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.optionLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4f4f4f;
+  flex: 1;
+}
+
+.optionBrand {
+  font-size: 14px;
+  font-weight: 700;
+  color: #8a8a8a;
+  flex-shrink: 0;
+}
+
+.optionCardOther {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.optionOtherLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 96px;
+}
+
+.optionOtherLeft input[type='radio'] {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.otherInput {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #bdbdbd;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0 12px;
+  font-size: 14px;
+  color: #4f4f4f;
+  box-sizing: border-box;
+}
+
+.otherInput::placeholder {
+  color: #c3c3c3;
+}
+
+.otherInput:disabled {
+  background: #f8f8f8;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .optionCardOther {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .optionOtherLeft {
+    min-width: auto;
+  }
+
+  .otherInput {
+    width: 100%;
+  }
+}
