@@ -1,0 +1,18 @@
+{
+  "vendor": "mfmgroup",
+  "name": "appativagarantia",
+  "version": "0.0.0",
+  "title": "App Ativa Garantia",
+  "description": "Componente que recebe formulário para ativacao garantia",
+  "builders": {
+    "react": "3.x",
+    "messages": "1.x",
+    "docs": "0.x"
+  },
+  "dependencies": {},
+  "registries": [
+    "smartcheckout"
+  ],
+  "policies": [],
+  "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
+}
