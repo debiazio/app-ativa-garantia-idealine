@@ -63,7 +63,7 @@ export default function AppAtivaGarantia() {
 
   return (
     <>
-      <section id="form">
+      <section id="form" style={{ scrollMarginTop: '120px' }}>
         <DadosEquipamento onContinue={handleContinueEquipamento} />
 
         <div ref={step2Ref}>
