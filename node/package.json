@@ -1,0 +1,12 @@
+{
+  "name": "app-ativa-garantia-node",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@vtex/api": "^7.0.0"
+  },
+  "devDependencies": {
+    "typescript": "5.5.3",
+    "@types/node": "20.0.0"
+  }
+}
