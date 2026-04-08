@@ -1,16 +1,311 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import styles from './dadosPessoais.module.css'
 import common from '../formCommon.module.css'
 
 interface DadosPessoaisProps {
   isActive: boolean
-  serial?: string
   onContinue?: (data: {
     nome: string
     email: string
     cpf: string
     telefone: string
   }) => void
+}
+
+type FieldErrors = {
+  nome: string
+  email: string
+  cpf: string
+  telefone: string
+}
+
+type FieldTouched = {
+  nome: boolean
+  email: boolean
+  cpf: boolean
+  telefone: boolean
+}
+
+function normalizeSpaces(value: string) {
+  return value.replace(/\s+/g, ' ').trim()
+}
+
+function capitalizeWords(value: string) {
+  return value
+    .toLowerCase()
+    .split(' ')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
+function formatNomeOnChange(value: string) {
+  return value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s]/g, '')
+}
+
+function formatNomeOnBlur(value: string) {
+  const cleaned = value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s]/g, '')
+  const normalized = normalizeSpaces(cleaned)
+
+  if (!normalized) {
+    return ''
+  }
+
+  return capitalizeWords(normalized)
+}
+
+function validateNome(value: string) {
+  const normalized = normalizeSpaces(value)
+
+  if (!normalized) {
+    return 'Informe seu nome completo.'
+  }
+
+  if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(normalized)) {
+    return 'Digite apenas letras.'
+  }
+
+  const words = normalized.split(' ').filter(Boolean)
+
+  if (words.length < 2) {
+    return 'Informe nome e sobrenome completos.'
+  }
+
+  const hasShortWord = words.some((word) => word.length < 2)
+
+  if (hasShortWord) {
+    return 'Informe nome e sobrenome.'
+  }
+
+  return ''
+}
+
+function formatEmail(value: string) {
+  return value.replace(/\s+/g, '').toLowerCase()
+}
+
+function validateEmail(value: string) {
+  const normalized = value.trim().toLowerCase()
+
+  if (!normalized) {
+    return 'Informe seu e-mail.'
+  }
+
+  if (/\s/.test(normalized)) {
+    return 'O e-mail não pode conter espaços.'
+  }
+
+  if (normalized.includes('..')) {
+    return 'Informe um e-mail válido.'
+  }
+
+  const parts = normalized.split('@')
+
+  if (parts.length !== 2) {
+    return 'Informe um e-mail válido.'
+  }
+
+  const [localPart, domain] = parts
+
+  if (!localPart || !domain) {
+    return 'Informe um e-mail válido.'
+  }
+
+  if (
+    domain.startsWith('.') ||
+    domain.endsWith('.') ||
+    domain.startsWith('-') ||
+    domain.endsWith('-')
+  ) {
+    return 'Informe um e-mail válido.'
+  }
+
+  if (!domain.includes('.')) {
+    return 'Informe um e-mail válido.'
+  }
+
+  const domainParts = domain.split('.')
+
+  if (domainParts.some((part) => !part)) {
+    return 'Informe um e-mail válido.'
+  }
+
+  if (domainParts.some((part) => part.startsWith('-') || part.endsWith('-'))) {
+    return 'Informe um e-mail válido.'
+  }
+
+  const emailRegex =
+    /^[a-z0-9._%+-]+@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/i
+
+  if (!emailRegex.test(normalized)) {
+    return 'Informe um e-mail válido.'
+  }
+
+  const tld = domainParts[domainParts.length - 1]
+
+  if (tld.length < 2) {
+    return 'Informe um e-mail válido.'
+  }
+
+  return ''
+}
+
+function onlyDigits(value: string) {
+  return value.replace(/\D/g, '')
+}
+
+function formatCpf(value: string) {
+  const digits = onlyDigits(value).slice(0, 11)
+
+  if (digits.length <= 3) {
+    return digits
+  }
+
+  if (digits.length <= 6) {
+    return digits.replace(/(\d{3})(\d+)/, '$1.$2')
+  }
+
+  if (digits.length <= 9) {
+    return digits.replace(/(\d{3})(\d{3})(\d+)/, '$1.$2.$3')
+  }
+
+  return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4')
+}
+
+function isRepeatedDigits(value: string) {
+  return /^(\d)\1+$/.test(value)
+}
+
+function isValidCpfDigits(cpf: string) {
+  if (cpf.length !== 11) {
+    return false
+  }
+
+  if (isRepeatedDigits(cpf)) {
+    return false
+  }
+
+  let sum = 0
+
+  for (let i = 0; i < 9; i += 1) {
+    sum += Number(cpf.charAt(i)) * (10 - i)
+  }
+
+  let firstDigit = (sum * 10) % 11
+
+  if (firstDigit === 10) {
+    firstDigit = 0
+  }
+
+  if (firstDigit !== Number(cpf.charAt(9))) {
+    return false
+  }
+
+  sum = 0
+
+  for (let i = 0; i < 10; i += 1) {
+    sum += Number(cpf.charAt(i)) * (11 - i)
+  }
+
+  let secondDigit = (sum * 10) % 11
+
+  if (secondDigit === 10) {
+    secondDigit = 0
+  }
+
+  if (secondDigit !== Number(cpf.charAt(10))) {
+    return false
+  }
+
+  return true
+}
+
+function validateCpf(value: string) {
+  const digits = onlyDigits(value)
+
+  if (!digits) {
+    return 'Informe seu CPF.'
+  }
+
+  if (digits.length !== 11) {
+    return 'O CPF deve ter 11 dígitos.'
+  }
+
+  if (!isValidCpfDigits(digits)) {
+    return 'Informe um CPF válido.'
+  }
+
+  return ''
+}
+
+function formatTelefone(value: string) {
+  const digits = onlyDigits(value).slice(0, 11)
+
+  if (digits.length <= 2) {
+    return digits.replace(/(\d{0,2})/, '($1')
+  }
+
+  if (digits.length <= 7) {
+    return digits.replace(/(\d{2})(\d{1})(\d+)/, '($1) $2$3')
+  }
+
+  return digits.replace(/(\d{2})(\d{1})(\d{4})(\d{1,4})/, '($1) $2$3-$4')
+}
+
+function isInvalidDdd(ddd: string) {
+  if (ddd.length !== 2) {
+    return true
+  }
+
+  if (ddd[0] === '0') {
+    return true
+  }
+
+  return false
+}
+
+function validateTelefone(value: string) {
+  const digits = onlyDigits(value)
+
+  if (!digits) {
+    return 'Informe seu telefone.'
+  }
+
+  if (digits.length !== 11) {
+    return 'O telefone deve ter 11 dígitos.'
+  }
+
+  if (isRepeatedDigits(digits)) {
+    return 'Informe um telefone válido.'
+  }
+
+  const ddd = digits.slice(0, 2)
+  const nonoDigito = digits.charAt(2)
+  const numero = digits.slice(2)
+  const miolo = digits.slice(3, 7)
+  const final = digits.slice(7)
+
+  if (isInvalidDdd(ddd)) {
+    return 'Informe um telefone válido.'
+  }
+
+  if (nonoDigito !== '9') {
+    return 'O telefone deve estar no formato (XX) 9XXXX-XXXX.'
+  }
+
+  if (/^0+$/.test(numero)) {
+    return 'Informe um telefone válido.'
+  }
+
+  if (/^0000$/.test(miolo) || /^0000$/.test(final)) {
+    return 'Informe um telefone válido.'
+  }
+
+  if (/^9?0+$/.test(numero)) {
+    return 'Informe um telefone válido.'
+  }
+
+  return ''
 }
 
 export default function DadosPessoais({
@@ -22,27 +317,75 @@ export default function DadosPessoais({
   const [cpf, setCpf] = useState('')
   const [telefone, setTelefone] = useState('')
 
+  const [touched, setTouched] = useState<FieldTouched>({
+    nome: false,
+    email: false,
+    cpf: false,
+    telefone: false,
+  })
+
+  const errors = useMemo<FieldErrors>(
+    () => ({
+      nome: validateNome(nome),
+      email: validateEmail(email),
+      cpf: validateCpf(cpf),
+      telefone: validateTelefone(telefone),
+    }),
+    [nome, email, cpf, telefone]
+  )
+
   const isValid =
+    !errors.nome &&
+    !errors.email &&
+    !errors.cpf &&
+    !errors.telefone &&
     nome.trim() &&
     email.trim() &&
     cpf.trim() &&
     telefone.trim()
 
+  const handleBlur = (field: keyof FieldTouched) => {
+    setTouched((prev) => ({
+      ...prev,
+      [field]: true,
+    }))
+  }
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    if (!isValid) {
+    setTouched({
+      nome: true,
+      email: true,
+      cpf: true,
+      telefone: true,
+    })
+
+    const normalizedNome = formatNomeOnBlur(nome)
+    const normalizedEmail = email.trim().toLowerCase()
+    const normalizedCpf = onlyDigits(cpf)
+    const normalizedTelefone = onlyDigits(telefone)
+
+    setNome(normalizedNome)
+    setEmail(normalizedEmail)
+    setCpf(formatCpf(normalizedCpf))
+    setTelefone(formatTelefone(normalizedTelefone))
+
+    if (
+      validateNome(normalizedNome) ||
+      validateEmail(normalizedEmail) ||
+      validateCpf(normalizedCpf) ||
+      validateTelefone(normalizedTelefone)
+    ) {
       return
     }
 
-    if (onContinue) {
-      onContinue({
-        nome,
-        email,
-        cpf,
-        telefone,
-      })
-    }
+    onContinue?.({
+      nome: normalizedNome,
+      email: normalizedEmail,
+      cpf: normalizedCpf,
+      telefone: normalizedTelefone,
+    })
   }
 
   if (!isActive) {
@@ -75,21 +418,37 @@ export default function DadosPessoais({
           <label className={common.label}>Nome</label>
           <input
             type="text"
-            className={common.input}
+            className={`${common.input} ${
+              touched.nome && errors.nome ? styles.inputError : ''
+            }`}
             value={nome}
-            onChange={(e) => setNome(e.target.value)}
+            onChange={(e) => setNome(formatNomeOnChange(e.target.value))}
+            onBlur={() => {
+              setNome(formatNomeOnBlur(nome))
+              handleBlur('nome')
+            }}
+            placeholder="Digite seu nome completo"
           />
+          {touched.nome && errors.nome ? (
+            <span className={styles.errorMessage}>{errors.nome}</span>
+          ) : null}
         </div>
 
         <div className={styles.field}>
           <label className={common.label}>E-mail</label>
           <input
             type="email"
-            className={common.input}
+            className={`${common.input} ${
+              touched.email && errors.email ? styles.inputError : ''
+            }`}
             placeholder="seu@email.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(formatEmail(e.target.value))}
+            onBlur={() => handleBlur('email')}
           />
+          {touched.email && errors.email ? (
+            <span className={styles.errorMessage}>{errors.email}</span>
+          ) : null}
         </div>
 
         <div className={styles.row}>
@@ -97,30 +456,38 @@ export default function DadosPessoais({
             <label className={common.label}>CPF</label>
             <input
               type="text"
-              className={common.input}
+              className={`${common.input} ${
+                touched.cpf && errors.cpf ? styles.inputError : ''
+              }`}
               placeholder="000.000.000-00"
               value={cpf}
-              onChange={(e) => setCpf(e.target.value)}
+              onChange={(e) => setCpf(formatCpf(e.target.value))}
+              onBlur={() => handleBlur('cpf')}
             />
+            {touched.cpf && errors.cpf ? (
+              <span className={styles.errorMessage}>{errors.cpf}</span>
+            ) : null}
           </div>
 
           <div className={styles.fieldHalf}>
             <label className={common.label}>Telefone</label>
             <input
               type="text"
-              className={common.input}
-              placeholder="(41) 9 8888-7777"
+              className={`${common.input} ${
+                touched.telefone && errors.telefone ? styles.inputError : ''
+              }`}
+              placeholder="(41) 98888-7777"
               value={telefone}
-              onChange={(e) => setTelefone(e.target.value)}
+              onChange={(e) => setTelefone(formatTelefone(e.target.value))}
+              onBlur={() => handleBlur('telefone')}
             />
+            {touched.telefone && errors.telefone ? (
+              <span className={styles.errorMessage}>{errors.telefone}</span>
+            ) : null}
           </div>
         </div>
 
-        <button
-          type="submit"
-          className={common.button}
-          disabled={!isValid}
-        >
+        <button type="submit" className={common.button} disabled={!isValid}>
           Continuar
         </button>
       </div>

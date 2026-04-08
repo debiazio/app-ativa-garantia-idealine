@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import DadosEquipamento from './componentes/dadosEquipamento'
 import DadosPessoais from './componentes/dadosPessoais'
 import DadosEndereco from './componentes/dadosEndereco'
@@ -8,8 +8,30 @@ import InfoGarantia from './componentes/infoGarantia'
 export default function AppAtivaGarantia() {
   const [step, setStep] = useState(1)
 
+  const step2Ref = useRef<HTMLDivElement | null>(null)
+  const step3Ref = useRef<HTMLDivElement | null>(null)
+  const step4Ref = useRef<HTMLDivElement | null>(null)
+
+  const scrollToStep = (ref: React.RefObject<HTMLDivElement | null>) => {
+    window.setTimeout(() => {
+      if (!ref.current) {
+        return
+      }
+
+      const offset = 120
+      const elementTop = ref.current.getBoundingClientRect().top + window.scrollY
+      const targetPosition = elementTop - offset
+
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth',
+      })
+    }, 150)
+  }
+
   const handleContinueEquipamento = (_serial: string) => {
     setStep(2)
+    scrollToStep(step2Ref)
   }
 
   const handleContinuePessoais = (_data: {
@@ -19,6 +41,7 @@ export default function AppAtivaGarantia() {
     telefone: string
   }) => {
     setStep(3)
+    scrollToStep(step3Ref)
   }
 
   const handleContinueEndereco = (_data: {
@@ -28,6 +51,7 @@ export default function AppAtivaGarantia() {
     complemento: string
   }) => {
     setStep(4)
+    scrollToStep(step4Ref)
   }
 
   const handleContinueCompra = (_data: {
@@ -42,20 +66,26 @@ export default function AppAtivaGarantia() {
       <section id="form">
         <DadosEquipamento onContinue={handleContinueEquipamento} />
 
-        <DadosPessoais
-          isActive={step >= 2}
-          onContinue={handleContinuePessoais}
-        />
+        <div ref={step2Ref}>
+          <DadosPessoais
+            isActive={step >= 2}
+            onContinue={handleContinuePessoais}
+          />
+        </div>
 
-        <DadosEndereco
-          isActive={step >= 3}
-          onContinue={handleContinueEndereco}
-        />
+        <div ref={step3Ref}>
+          <DadosEndereco
+            isActive={step >= 3}
+            onContinue={handleContinueEndereco}
+          />
+        </div>
 
-        <DadosCompra
-          isActive={step >= 4}
-          onContinue={handleContinueCompra}
-        />
+        <div ref={step4Ref}>
+          <DadosCompra
+            isActive={step >= 4}
+            onContinue={handleContinueCompra}
+          />
+        </div>
       </section>
 
       <InfoGarantia />

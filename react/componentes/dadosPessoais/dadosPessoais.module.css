@@ -1,9 +1,3 @@
-.row {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 10px;
-}
-
 .field {
   display: flex;
   flex-direction: column;
@@ -14,6 +8,23 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.inputError {
+  border-color: #d12b2b !important;
+}
+
+.errorMessage {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #d12b2b;
 }
 
 @media (max-width: 640px) {
