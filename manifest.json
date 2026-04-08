@@ -1,7 +1,7 @@
 {
   "vendor": "mfmgroup",
   "name": "appativagarantia",
-  "version": "0.0.4",
+  "version": "0.0.2",
   "title": "App Ativa Garantia",
   "description": "Componente que recebe formulário para ativação de garantia",
   "builders": {
@@ -15,6 +15,14 @@
   "registries": [
     "smartcheckout"
   ],
-  "policies": [],
+  "policies": [
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "stermax.com.br",
+        "path": "/images_idealine/*"
+      }
+    }
+  ],
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
 }
