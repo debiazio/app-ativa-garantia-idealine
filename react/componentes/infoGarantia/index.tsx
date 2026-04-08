@@ -22,7 +22,7 @@ export default function InfoGarantia() {
           </div>
 
           <div className={styles.card}>
-            <h3 className={styles.important}>⚠ IMPORTANTE</h3>
+            <h3 className={styles.important}>⚠️ IMPORTANTE</h3>
 
             <p className={styles.text}>
               A garantia padrão legal é de 90 dias.

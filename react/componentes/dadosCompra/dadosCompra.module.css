@@ -48,6 +48,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 0 12px;
 }
 
 .optionOtherLeft {
@@ -81,6 +82,15 @@
 .otherInput:disabled {
   background: #f8f8f8;
   cursor: not-allowed;
+}
+
+.optionBrandImage {
+  max-width: 90px;
+  max-height: 28px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {

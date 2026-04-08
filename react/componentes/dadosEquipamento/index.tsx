@@ -23,6 +23,7 @@ export default function DadosEquipamento({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [produtoDescricao, setProdutoDescricao] = useState('')
+  const [showHelp, setShowHelp] = useState(false)
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -62,7 +63,7 @@ export default function DadosEquipamento({
       if (onContinue) {
         onContinue(normalizedSerial)
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Não foi possível validar o número de série no momento.')
     } finally {
       setLoading(false)
@@ -78,9 +79,31 @@ export default function DadosEquipamento({
             <h2 className={common.title}>Dados do equipamento</h2>
           </div>
 
-          <button type="button" className={styles.help} aria-label="Ajuda">
-            ?
-          </button>
+          <div
+            className={styles.helpWrapper}
+            onMouseEnter={() => setShowHelp(true)}
+            onMouseLeave={() => setShowHelp(false)}
+          >
+            <button
+              type="button"
+              className={styles.help}
+              aria-label="Ajuda"
+              onClick={() => setShowHelp((prev) => !prev)}
+            >
+              ?
+            </button>
+
+            {showHelp ? (
+              <div className={styles.helpPopover}>
+                <img
+                  src="https://mfmgroup.vtexassets.com/assets/vtex.file-manager-graphql/images/34521194-d945-48a5-94c6-1396b828ce61___adf01dd8f9d438feb75efe74dd72a62c.png"
+                  alt="Exemplo de onde encontrar o número de série"
+                  className={styles.helpImage}
+                />
+                <span className={styles.helpArrow} />
+              </div>
+            ) : null}
+          </div>
         </div>
 
         <p className={styles.description}>
