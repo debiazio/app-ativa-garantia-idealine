@@ -1,7 +1,7 @@
 {
   "vendor": "mfmgroup",
   "name": "appativagarantia",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "title": "App Ativa Garantia",
   "description": "Componente que recebe formulário para ativação de garantia",
   "builders": {
