@@ -9,6 +9,10 @@
     "validateSerial": {
       "path": "/_v/garantia/serial/:serial",
       "public": true
+    },
+    "saveActivation": {
+      "path": "/_v/garantia/ativacao",
+      "public": true
     }
   }
 }

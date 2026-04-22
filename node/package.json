@@ -7,8 +7,9 @@
     "node-fetch": "2.7.0"
   },
   "devDependencies": {
-    "typescript": "5.5.3",
     "@types/node": "20.0.0",
-    "@types/node-fetch": "2.6.11"
+    "@types/node-fetch": "2.6.11",
+    "mfmgroup.appativagarantia": "https://desenv2idealine--mfmgroup.myvtex.com/_v/private/typings/linked/v1/mfmgroup.appativagarantia@0.0.8+build1776451710/public/@types/mfmgroup.appativagarantia",
+    "typescript": "5.5.3"
   }
 }

@@ -3,10 +3,11 @@
     "target": "es2020",
     "module": "commonjs",
     "lib": ["es2020"],
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "strict": false,
     "skipLibCheck": true
   },
-  "include": ["./**/*.ts", "./**/*.json"]
+  "include": ["./**/*.ts", "./**/*.json", "./**/*.d.ts"]
 }

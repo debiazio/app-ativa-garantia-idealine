@@ -12,16 +12,24 @@
     "store": "0.x"
   },
   "dependencies": {},
-  "registries": [
-    "smartcheckout"
-  ],
+  "registries": ["smartcheckout"],
   "policies": [
     {
       "name": "outbound-access",
       "attrs": {
         "host": "stermax.com.br",
-        "path": "/images_idealine/*"
+        "path": "/images_idealine/serials.json"
       }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "mfmgroup.vtexcommercestable.com.br",
+        "path": "/api/dataentities/*"
+      }
+    },
+    {
+      "name": "ADMIN_DS"
     }
   ],
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"

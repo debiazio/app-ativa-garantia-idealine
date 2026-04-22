@@ -93,6 +93,29 @@
   flex-shrink: 0;
 }
 
+.otherField {
+  margin-top: 12px;
+}
+
+.inputError {
+  border-color: #d12b2b !important;
+}
+
+.errorMessage {
+  margin-top: 6px;
+  display: block;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #d12b2b;
+}
+
+.submitError {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #d12b2b;
+}
+
 @media (max-width: 768px) {
   .grid {
     grid-template-columns: 1fr;

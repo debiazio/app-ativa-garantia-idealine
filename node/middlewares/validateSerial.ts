@@ -1,5 +1,7 @@
 import type { ServiceContext } from '@vtex/api'
-import { getSerialMap, type SerialMap } from '../utils/serialsCache'
+
+import { getSerialMap } from '../utils/serialsCache'
+import type { SerialMap } from '../utils/serialsCache'
 
 interface SerialRecord {
   serial: string
@@ -31,6 +33,7 @@ export async function validateSerial(
     }
 
     await next()
+
     return
   }
 
@@ -46,6 +49,7 @@ export async function validateSerial(
       }
 
       await next()
+
       return
     }
 

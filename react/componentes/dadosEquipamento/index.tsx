@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+
 import styles from './dadosEquipamento.module.css'
 import common from '../formCommon.module.css'
 
@@ -7,7 +8,7 @@ interface DadosEquipamentoProps {
 }
 
 interface ValidateSerialResponse {
-  found: boolean
+  found?: boolean
   message?: string
   serial?: string
   descricaoProduto?: string | null
@@ -25,6 +26,10 @@ export default function DadosEquipamento({
   const [produtoDescricao, setProdutoDescricao] = useState('')
   const [showHelp, setShowHelp] = useState(false)
 
+  const getFriendlyErrorMessage = () => {
+    return 'Não foi possível validar o número de série agora. Tente novamente em instantes.'
+  }
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
@@ -33,6 +38,7 @@ export default function DadosEquipamento({
     if (!normalizedSerial) {
       setError('Informe o número de série.')
       setProdutoDescricao('')
+
       return
     }
 
@@ -51,20 +57,49 @@ export default function DadosEquipamento({
         }
       )
 
-      const data = (await response.json()) as ValidateSerialResponse
+      const contentType = response.headers.get('content-type') ?? ''
+      let data: ValidateSerialResponse | null = null
+      let rawText = ''
 
-      if (!response.ok || !data.found) {
-        setError(data.message || 'Número de série não encontrado.')
+      if (contentType.includes('application/json')) {
+        data = (await response.json()) as ValidateSerialResponse
+      } else {
+        rawText = await response.text()
+      }
+
+      if (!response.ok) {
+        if (response.status === 404 && data?.message) {
+          setError(data.message)
+
+          return
+        }
+
+        console.error('Erro ao validar serial:', {
+          status: response.status,
+          statusText: response.statusText,
+          data,
+          rawText,
+        })
+
+        setError(getFriendlyErrorMessage())
+
         return
       }
 
-      setProdutoDescricao(data.descricaoProduto || '')
+      if (!data || !data.found) {
+        setError(data?.message ?? 'Número de série não encontrado.')
+
+        return
+      }
+
+      setProdutoDescricao(data.descricaoProduto ?? '')
 
       if (onContinue) {
         onContinue(normalizedSerial)
       }
-    } catch (_err) {
-      setError('Não foi possível validar o número de série no momento.')
+    } catch (err) {
+      console.error('Erro inesperado ao validar serial:', err)
+      setError(getFriendlyErrorMessage())
     } finally {
       setLoading(false)
     }
@@ -96,7 +131,7 @@ export default function DadosEquipamento({
             {showHelp ? (
               <div className={styles.helpPopover}>
                 <img
-                  src="https://mfmgroup.vtexassets.com/assets/vtex.file-manager-graphql/images/34521194-d945-48a5-94c6-1396b828ce61___adf01dd8f9d438feb75efe74dd72a62c.png"
+                  src="https://mfmgroup.vtexassets.com/assets/vtex.file-manager-graphql/images/98af5303-6409-4353-8c8d-86e910f0ec4a___46610486027a3bf113daf0e3f3dd2bd1.png"
                   alt="Exemplo de onde encontrar o número de série"
                   className={styles.helpImage}
                 />

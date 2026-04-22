@@ -1,124 +1,88 @@
-# App Ativa Garantia
+## Fluxo de ativação de garantia
 
-Aplicação VTEX IO responsável pelo fluxo de ativação de garantia, com formulário em múltiplas etapas e validação de número de série via serviço Node.
+O fluxo da aplicação funciona em 4 etapas:
 
-## Funcionalidades
+1. **Dados do equipamento**
+   - valida o número de série pela rota `/_v/garantia/serial/:serial`
+   - exibe a descrição do produto quando o serial é encontrado
 
-- Exibição de formulário em etapas:
-  - Dados do equipamento
-  - Dados pessoais
-  - Endereço
-  - Canal de compra
-- Validação de número de série no backend
-- Retorno da descrição do produto a partir do serial informado
-- Bloqueio de avanço quando o serial não é encontrado
-- Bloco informativo com CTA para rolagem até o formulário
+2. **Dados pessoais**
+   - coleta nome, e-mail, CPF e telefone
+   - aplica validações de preenchimento e formato
 
-## Estrutura do projeto
+3. **Endereço**
+   - consulta o CEP
+   - preenche automaticamente o endereço
+   - permite informar número, complemento e referência
 
-```txt
-react/
-  AppAtivaGarantia.tsx
-  componentes/
-    dadosEquipamento/
-    dadosPessoais/
-    dadosEndereco/
-    dadosCompra/
-    infoGarantia/
-    formCommon.module.css
+4. **Canal de compra**
+   - coleta o canal de compra
+   - ao clicar em **Finalizar**, envia os dados para a rota `/_v/garantia/ativacao`
 
-node/
-  index.ts
-  service.json
-  tsconfig.json
-  package.json
-  middlewares/
-    validateSerial.ts
-  data/
-    serials.json
-Como funciona a validação do serial
+## Persistência dos dados
 
-O passo 1 do formulário envia o número de série para a rota pública do app:
+Ao finalizar o formulário, o backend:
 
-/_v/garantia/serial/:serial
+- recebe os dados do cadastro
+- consulta a base oficial de seriais
+- identifica `descricaoProduto`, `codigoItem` e `dataLancamentoPedido`
+- calcula os campos de garantia
+- grava o registro no Master Data, na entidade `GA`
 
-A rota consulta o arquivo node/data/serials.json, normaliza o número informado e retorna:
+## Regras de datas
 
-found: true + dados do produto, quando o serial existe
-found: false + mensagem de erro, quando o serial não existe
-Exemplo de resposta de sucesso
-{
-  "found": true,
-  "serial": "ST0000732",
-  "descricaoProduto": "AUTOCLAVE HORIZONTAL DIGITAL GRAVITACIONAL NORMAL BOX 42 LITROS 220V - REGULAR BRANCA",
-  "codigoItem": "42AHDGNBRBR220",
-  "numeroPedido": 1,
-  "dataLancamentoPedido": "2021-01-04T03:00:28.000Z"
-}
-Exemplo de resposta de erro
-{
-  "found": false,
-  "message": "Número de série não encontrado."
-}
-Geração da base serials.json
+A aplicação considera as seguintes regras:
 
-A base de validação é gerada a partir de uma planilha .xlsx externa, convertida para JSON por um script auxiliar fora do app VTEX.
+- `dataAtivacao` = data atual em que o cadastro é realizado no site
+- `dataEmissaoNotaFiscal` = `DataLancamentoPedido + 1 dia`
+- `dataInicioGarantia` = igual a `dataEmissaoNotaFiscal`
 
-Regras aplicadas na geração do JSON
-validação somente por NumeroSerie
-serial normalizado com trim() e toUpperCase()
-em caso de duplicidade, prevalece o registro com a DataLancamentoPedido mais recente
-a base mantém também:
-descricaoProduto
-codigoItem
-numeroPedido
-dataLancamentoPedido
-Requisitos
-Node
-Yarn
-VTEX IO CLI
-Desenvolvimento
+## Regras de validade da garantia
 
-Instalar dependências da raiz do projeto:
+A validade é calculada com base na `descricaoProduto`:
 
-yarn
+- se contiver `BELLINHA` → **2 anos**
+- se contiver `LA BELLE` → **2 anos**
+- se contiver `COPO/HASTE/SEPARADOR` → **2 anos**
+- caso contrário → **1 ano**
 
-Instalar dependências do serviço Node:
+## Regra de status
 
-cd node
-yarn
-cd ..
+O campo `status` é calculado automaticamente:
 
-Rodar o link do app:
+- `ativa` → quando a garantia ainda está dentro do prazo
+- `expirada` → quando a `dataValidade` já passou
 
-vtex link
-Builder utilizado
+## Integração com Master Data
 
-No manifest.json, o app utiliza:
+Os dados são gravados na entidade `GA` do Master Data com campos como:
 
-"builders": {
-  "react": "3.x",
-  "node": "7.x",
-  "messages": "1.x",
-  "docs": "0.x",
-  "store": "0.x"
-}
-Rota disponível
+- `serial`
+- `descricaoProduto`
+- `codigoItem`
+- `nome`
+- `email`
+- `cpf`
+- `telefone`
+- `cep`
+- `endereco`
+- `numero`
+- `complemento`
+- `canalCompra`
+- `dataAtivacao`
+- `dataEmissaoNotaFiscal`
+- `dataInicioGarantia`
+- `dataValidade`
+- `regraGarantiaAplicada`
+- `status`
+- `origemCadastro`
+- `workspace`
 
-Após o link/deploy, a rota de validação fica disponível em:
+## Tratamento de erros no frontend
 
-/_v/garantia/serial/:serial
-Próximos passos
-Persistir os dados finais da ativação de garantia
-Definir destino dos dados salvos
-Integrar com Master Data ou backend externo
-Automatizar atualização da base de seriais
-Melhorar feedback visual de carregamento e erros
-Observações
-O frontend não consulta a planilha diretamente
-A leitura da base acontece no backend do app
-O arquivo serials.json é uma solução inicial para permitir validação rápida e estável
-Futuramente, a origem da consulta pode ser substituída por banco de dados ou API externa sem necessidade de refatorar o frontend
-Autor
+Mensagens técnicas do backend não devem ser exibidas diretamente para o usuário.
 
-Desenvolvimento interno para o app de ativação de garantia da Idealine.
+Quando ocorre falha na validação do serial ou na finalização do cadastro:
+
+- o usuário vê apenas uma mensagem amigável
+- o detalhe técnico fica disponível apenas no console
