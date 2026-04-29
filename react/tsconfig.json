@@ -5,6 +5,7 @@
     "lib": ["dom"],
     "module": "esnext",
     "moduleResolution": "node",
+    "ignoreDeprecations": "6.0",
     "target": "es2017"
   },
   "include": [
