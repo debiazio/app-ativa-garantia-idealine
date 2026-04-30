@@ -9,6 +9,7 @@ interface ActivationPayload {
   serial?: string
   nome?: string
   email?: string
+  emailto?: string
   cpf?: string
   telefone?: string
   cep?: string
@@ -72,9 +73,7 @@ function addDays(dateString: string, days: number) {
 
 function addYears(date: Date, years: number) {
   const nextDate = new Date(date)
-
   nextDate.setFullYear(nextDate.getFullYear() + years)
-
   return nextDate
 }
 
@@ -86,79 +85,40 @@ function getWarrantyRule(descricaoProduto: string | null) {
   const description = String(descricaoProduto || '').toUpperCase()
 
   if (description.includes('BELLINHA')) {
-    return {
-      rule: 'bellinha_2_anos',
-      years: 2,
-    }
+    return { rule: 'bellinha_2_anos', years: 2 }
   }
 
   if (description.includes('LA BELLE')) {
-    return {
-      rule: 'la_belle_2_anos',
-      years: 2,
-    }
+    return { rule: 'la_belle_2_anos', years: 2 }
   }
 
   if (description.includes('COPO/HASTE/SEPARADOR')) {
-    return {
-      rule: 'kit_2_anos',
-      years: 2,
-    }
+    return { rule: 'kit_2_anos', years: 2 }
   }
 
-  return {
-    rule: 'padrao_1_ano',
-    years: 1,
-  }
+  return { rule: 'padrao_1_ano', years: 1 }
 }
 
 function getWarrantyStatus(dataValidadeDate: Date) {
   const now = new Date()
+  return now.getTime() > dataValidadeDate.getTime() ? 'expirada' : 'ativa'
+}
 
-  if (now.getTime() > dataValidadeDate.getTime()) {
-    return 'expirada'
-  }
-
-  return 'ativa'
+function getEmailFromBody(body: ActivationPayload) {
+  const raw = body.emailto || body.email || ''
+  return normalizeText(raw).toLowerCase()
 }
 
 function validatePayload(body: ActivationPayload) {
-  if (!normalizeSerial(body.serial || '')) {
-    return 'VALIDATION_ERROR_SERIAL'
-  }
-
-  if (!normalizeText(body.nome || '')) {
-    return 'VALIDATION_ERROR_NOME'
-  }
-
-  if (!normalizeText(body.email || '')) {
-    return 'VALIDATION_ERROR_EMAIL'
-  }
-
-  if (!onlyDigits(body.cpf || '')) {
-    return 'VALIDATION_ERROR_CPF'
-  }
-
-  if (!onlyDigits(body.telefone || '')) {
-    return 'VALIDATION_ERROR_TELEFONE'
-  }
-
-  if (!onlyDigits(body.cep || '')) {
-    return 'VALIDATION_ERROR_CEP'
-  }
-
-  if (!normalizeText(body.endereco || '')) {
-    return 'VALIDATION_ERROR_ENDERECO'
-  }
-
-  if (!normalizeText(body.numero || '')) {
-    return 'VALIDATION_ERROR_NUMERO'
-  }
-
-  if (!normalizeText(body.canalCompra || '')) {
-    return 'VALIDATION_ERROR_CANAL_COMPRA'
-  }
-
+  if (!normalizeSerial(body.serial || '')) return 'VALIDATION_ERROR_SERIAL'
+  if (!normalizeText(body.nome || '')) return 'VALIDATION_ERROR_NOME'
+  if (!getEmailFromBody(body)) return 'VALIDATION_ERROR_EMAIL'
+  if (!onlyDigits(body.cpf || '')) return 'VALIDATION_ERROR_CPF'
+  if (!onlyDigits(body.telefone || '')) return 'VALIDATION_ERROR_TELEFONE'
+  if (!onlyDigits(body.cep || '')) return 'VALIDATION_ERROR_CEP'
+  if (!normalizeText(body.endereco || '')) return 'VALIDATION_ERROR_ENDERECO'
+  if (!normalizeText(body.numero || '')) return 'VALIDATION_ERROR_NUMERO'
+  if (!normalizeText(body.canalCompra || '')) return 'VALIDATION_ERROR_CANAL_COMPRA'
   return ''
 }
 
@@ -168,13 +128,8 @@ export async function saveActivation(
 ) {
   if (ctx.method !== 'POST') {
     ctx.status = 405
-    ctx.body = {
-      success: false,
-      message: 'Não foi possível finalizar o cadastro.',
-    }
-
+    ctx.body = { success: false, message: 'Não foi possível finalizar o cadastro.' }
     await next()
-
     return
   }
 
@@ -184,15 +139,9 @@ export async function saveActivation(
     body = (await json(ctx.req)) as ActivationPayload
   } catch (error) {
     console.error('saveActivation body parse error:', error)
-
     ctx.status = 400
-    ctx.body = {
-      success: false,
-      message: 'Não foi possível finalizar o cadastro.',
-    }
-
+    ctx.body = { success: false, message: 'Não foi possível finalizar o cadastro.' }
     await next()
-
     return
   }
 
@@ -200,15 +149,9 @@ export async function saveActivation(
 
   if (validationError) {
     console.error('saveActivation validation error:', validationError, body)
-
     ctx.status = 400
-    ctx.body = {
-      success: false,
-      message: 'Não foi possível finalizar o cadastro.',
-    }
-
+    ctx.body = { success: false, message: 'Não foi possível finalizar o cadastro.' }
     await next()
-
     return
   }
 
@@ -219,47 +162,37 @@ export async function saveActivation(
 
     if (!record) {
       console.error('saveActivation serial not found:', serial)
-
       ctx.status = 404
-      ctx.body = {
-        success: false,
-        message: 'Não foi possível finalizar o cadastro.',
-      }
-
+      ctx.body = { success: false, message: 'Não foi possível finalizar o cadastro.' }
       await next()
-
       return
     }
 
     if (!record.dataLancamentoPedido) {
       console.error('saveActivation missing dataLancamentoPedido:', record)
-
       ctx.status = 422
-      ctx.body = {
-        success: false,
-        message: 'Não foi possível finalizar o cadastro.',
-      }
-
+      ctx.body = { success: false, message: 'Não foi possível finalizar o cadastro.' }
       await next()
-
       return
     }
 
+    const emailValue = getEmailFromBody(body)
+
     const dataAtivacaoDate = new Date()
     const dataEmissaoNotaFiscalDate = addDays(record.dataLancamentoPedido, 1)
-    const dataInicioGarantiaDate = new Date(dataEmissaoNotaFiscalDate)
     const warrantyRule = getWarrantyRule(record.descricaoProduto)
-    const dataValidadeDate = addYears(
-      dataEmissaoNotaFiscalDate,
-      warrantyRule.years
-    )
+    const dataValidadeDate = addYears(dataEmissaoNotaFiscalDate, warrantyRule.years)
 
     const document = {
       serial,
       descricaoProduto: record.descricaoProduto,
       codigoItem: record.codigoItem,
       nome: normalizeText(body.nome || ''),
-      email: normalizeText(body.email || '').toLowerCase(),
+
+      // IMPORTANT: manda os dois para satisfazer o Master Data (emailto obrigatório)
+      email: emailValue,
+      emailto: emailValue,
+
       cpf: onlyDigits(body.cpf || ''),
       telefone: onlyDigits(body.telefone || ''),
       cep: onlyDigits(body.cep || ''),
@@ -267,12 +200,12 @@ export async function saveActivation(
       numero: normalizeText(body.numero || ''),
       complemento: normalizeText(body.complemento || ''),
       canalCompra: normalizeText(body.canalCompra || ''),
+
       dataAtivacao: toIsoWithoutMilliseconds(dataAtivacaoDate),
-      dataEmissaoNotaFiscal: toIsoWithoutMilliseconds(
-        dataEmissaoNotaFiscalDate
-      ),
-      dataInicioGarantia: toIsoWithoutMilliseconds(dataInicioGarantiaDate),
+      dataEmissaoNotaFiscal: toIsoWithoutMilliseconds(dataEmissaoNotaFiscalDate),
+      dataInicioGarantia: toIsoWithoutMilliseconds(dataEmissaoNotaFiscalDate),
       dataValidade: toIsoWithoutMilliseconds(dataValidadeDate),
+
       regraGarantiaAplicada: warrantyRule.rule,
       status: getWarrantyStatus(dataValidadeDate),
       origemCadastro: 'site',
@@ -280,25 +213,15 @@ export async function saveActivation(
     }
 
     const masterData = new MasterDataClient(ctx.vtex)
-
     await masterData.createDocument('GA', document)
 
     ctx.status = 200
-    ctx.body = {
-      success: true,
-      message: 'Cadastro finalizado com sucesso.',
-    }
-
+    ctx.body = { success: true, message: 'Cadastro finalizado com sucesso.' }
     await next()
   } catch (error) {
     console.error('saveActivation unexpected error:', error)
-
     ctx.status = 500
-    ctx.body = {
-      success: false,
-      message: 'Não foi possível finalizar o cadastro.',
-    }
-
+    ctx.body = { success: false, message: 'Não foi possível finalizar o cadastro.' }
     await next()
   }
 }

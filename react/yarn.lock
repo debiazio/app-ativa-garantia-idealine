@@ -3992,9 +3992,9 @@ merge-stream@^2.0.0:
   resolved "https://registry.yarnpkg.com/merge-stream/-/merge-stream-2.0.0.tgz#52823629a14dd00c9770fb6ad47dc6310f2c1f60"
   integrity sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==
 
-"mfmgroup.appativagarantia@https://desenv2idealine--mfmgroup.myvtex.com/_v/private/typings/linked/v1/mfmgroup.appativagarantia@0.0.8+build1776451710/public/@types/mfmgroup.appativagarantia":
+"mfmgroup.appativagarantia@https://desenvolvimento--mfmgroup.myvtex.com/_v/private/typings/linked/v1/mfmgroup.appativagarantia@0.0.9+build1777492647/public/@types/mfmgroup.appativagarantia":
   version "0.0.0"
-  resolved "https://desenv2idealine--mfmgroup.myvtex.com/_v/private/typings/linked/v1/mfmgroup.appativagarantia@0.0.8+build1776451710/public/@types/mfmgroup.appativagarantia#7562e5604029bf926910ff7e20afe049249eb03e"
+  resolved "https://desenvolvimento--mfmgroup.myvtex.com/_v/private/typings/linked/v1/mfmgroup.appativagarantia@0.0.9+build1777492647/public/@types/mfmgroup.appativagarantia#b31a3504a61a6757a182450486fe3ffd6f9fee58"
 
 micromatch@^3.1.4:
   version "3.1.10"

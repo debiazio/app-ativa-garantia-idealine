@@ -6,7 +6,7 @@ interface DadosPessoaisProps {
   isActive: boolean
   onContinue?: (data: {
     nome: string
-    email: string
+    emailto: string  // ← ALTERAÇÃO 1: interface
     cpf: string
     telefone: string
   }) => void
@@ -14,14 +14,14 @@ interface DadosPessoaisProps {
 
 type FieldErrors = {
   nome: string
-  email: string
+  emailto: string  // ← ALTERAÇÃO 2: type FieldErrors
   cpf: string
   telefone: string
 }
 
 type FieldTouched = {
   nome: boolean
-  email: boolean
+  emailto: boolean  // ← ALTERAÇÃO 3: type FieldTouched
   cpf: boolean
   telefone: boolean
 }
@@ -319,13 +319,13 @@ export default function DadosPessoais({
   onContinue,
 }: DadosPessoaisProps) {
   const [nome, setNome] = useState('')
-  const [email, setEmail] = useState('')
+  const [emailto, setEmailto] = useState('')  // ← ALTERAÇÃO 4: state
   const [cpf, setCpf] = useState('')
   const [telefone, setTelefone] = useState('')
 
   const [touched, setTouched] = useState<FieldTouched>({
     nome: false,
-    email: false,
+    emailto: false,  // ← ALTERAÇÃO 5: touched state
     cpf: false,
     telefone: false,
   })
@@ -333,20 +333,20 @@ export default function DadosPessoais({
   const errors = useMemo<FieldErrors>(
     () => ({
       nome: validateNome(nome),
-      email: validateEmail(email),
+      emailto: validateEmail(emailto),  // ← ALTERAÇÃO 6: useMemo
       cpf: validateCpf(cpf),
       telefone: validateTelefone(telefone),
     }),
-    [nome, email, cpf, telefone]
+    [nome, emailto, cpf, telefone]  // ← ALTERAÇÃO 7: dependency array
   )
 
   const isValid =
     !errors.nome &&
-    !errors.email &&
+    !errors.emailto &&  // ← ALTERAÇÃO 8: isValid check
     !errors.cpf &&
     !errors.telefone &&
     nome.trim() &&
-    email.trim() &&
+    emailto.trim() &&  // ← ALTERAÇÃO 9: isValid check
     cpf.trim() &&
     telefone.trim()
 
@@ -362,24 +362,24 @@ export default function DadosPessoais({
 
     setTouched({
       nome: true,
-      email: true,
+      emailto: true,  // ← ALTERAÇÃO 10: setTouched
       cpf: true,
       telefone: true,
     })
 
     const normalizedNome = formatNomeOnBlur(nome)
-    const normalizedEmail = email.trim().toLowerCase()
+    const normalizedEmailto = emailto.trim().toLowerCase()  // ← ALTERAÇÃO 11: normalized
     const normalizedCpf = onlyDigits(cpf)
     const normalizedTelefone = onlyDigits(telefone)
 
     setNome(normalizedNome)
-    setEmail(normalizedEmail)
+    setEmailto(normalizedEmailto)  // ← ALTERAÇÃO 12: setEmailto
     setCpf(formatCpf(normalizedCpf))
     setTelefone(formatTelefone(normalizedTelefone))
 
     if (
       validateNome(normalizedNome) ||
-      validateEmail(normalizedEmail) ||
+      validateEmail(normalizedEmailto) ||  // ← ALTERAÇÃO 13: validate emailto
       validateCpf(normalizedCpf) ||
       validateTelefone(normalizedTelefone)
     ) {
@@ -388,7 +388,7 @@ export default function DadosPessoais({
 
     onContinue?.({
       nome: normalizedNome,
-      email: normalizedEmail,
+      emailto: normalizedEmailto,  // ← ALTERAÇÃO 14: payload
       cpf: normalizedCpf,
       telefone: normalizedTelefone,
     })
@@ -445,15 +445,15 @@ export default function DadosPessoais({
           <input
             type="email"
             className={`${common.input} ${
-              touched.email && errors.email ? styles.inputError : ''
+              touched.emailto && errors.emailto ? styles.inputError : ''  // ← ALTERAÇÃO 15: input field
             }`}
             placeholder="seu@email.com"
-            value={email}
-            onChange={(e) => setEmail(formatEmail(e.target.value))}
-            onBlur={() => handleBlur('email')}
+            value={emailto}  // ← ALTERAÇÃO 16: value
+            onChange={(e) => setEmailto(formatEmail(e.target.value))}  // ← ALTERAÇÃO 17: onChange
+            onBlur={() => handleBlur('emailto')}  // ← ALTERAÇÃO 18: onBlur
           />
-          {touched.email && errors.email ? (
-            <span className={styles.errorMessage}>{errors.email}</span>
+          {touched.emailto && errors.emailto ? (  // ← ALTERAÇÃO 19: error display
+            <span className={styles.errorMessage}>{errors.emailto}</span>
           ) : null}
         </div>
 

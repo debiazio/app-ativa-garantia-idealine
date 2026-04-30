@@ -1745,9 +1745,9 @@ methods@^1.0.1:
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==
 
-"mfmgroup.appativagarantia@https://desenv2idealine--mfmgroup.myvtex.com/_v/private/typings/linked/v1/mfmgroup.appativagarantia@0.0.8+build1776451710/public/@types/mfmgroup.appativagarantia":
+"mfmgroup.appativagarantia@https://desenvolvimento--mfmgroup.myvtex.com/_v/private/typings/linked/v1/mfmgroup.appativagarantia@0.0.9+build1777492647/public/@types/mfmgroup.appativagarantia":
   version "0.0.0"
-  resolved "https://desenv2idealine--mfmgroup.myvtex.com/_v/private/typings/linked/v1/mfmgroup.appativagarantia@0.0.8+build1776451710/public/@types/mfmgroup.appativagarantia#7562e5604029bf926910ff7e20afe049249eb03e"
+  resolved "https://desenvolvimento--mfmgroup.myvtex.com/_v/private/typings/linked/v1/mfmgroup.appativagarantia@0.0.9+build1777492647/public/@types/mfmgroup.appativagarantia#b31a3504a61a6757a182450486fe3ffd6f9fee58"
 
 mime-db@1.52.0:
   version "1.52.0"

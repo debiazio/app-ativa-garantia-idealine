@@ -8,7 +8,7 @@ import InfoGarantia from './componentes/infoGarantia'
 
 interface DadosPessoaisData {
   nome: string
-  email: string
+  emailto: string
   cpf: string
   telefone: string
 }
@@ -108,7 +108,7 @@ export default function AppAtivaGarantia() {
         body: JSON.stringify({
           serial,
           nome: dadosPessoais.nome,
-          email: dadosPessoais.email,
+          email: dadosPessoais.emailto,
           cpf: dadosPessoais.cpf,
           telefone: dadosPessoais.telefone,
           cep: dadosEndereco.cep,

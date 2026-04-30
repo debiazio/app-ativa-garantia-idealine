@@ -12,7 +12,9 @@
     "store": "0.x"
   },
   "dependencies": {},
-  "registries": ["smartcheckout"],
+  "registries": [
+    "smartcheckout"
+  ],
   "policies": [
     {
       "name": "outbound-access",
